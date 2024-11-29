@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Ежедневник</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        a {
+            text-decoration: none;
+            color: black;
+        }
+        .task-item {
+            display: flex;
+            justify-content: space-between; /* Выровнять элементы по краям */
+            align-items: center; /* Центрировать по вертикали */
+        }
+        .status-badge {
+            height: 30px; /* Фиксированная высота для статуса */
+            line-height: 30px; /* Центрирование текста по вертикали */
+            text-align: center; /* Центрирование текста по горизонтали */
+            padding: 0 10px; /* Отступы по горизонтали */
+        }
+        .task-actions {
+            display: flex;
+            gap: 10px; /* Отступ между кнопками */
+        }
+    </style>
+</head>
+<body class="container mt-5">
+    <h1 class="text-center">Список задач</h1>
+    <form id="filter-form" method="GET" action="" class="mb-4">
+        <div class="form-group">
+            <label for="status-filter">Статус:</label>
+            <select id="status-filter" name="status" class="form-control" onchange="this.form.submit()">
+                <option value="all" {% if request.GET.status == 'all' %}selected{% endif %}>
+                    Все
+                </option>
+                <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>
+                    Направлена в работу
+                </option>
+                <option value="in_progress" {% if request.GET.status == 'in_progress' %}selected{% endif %}>
+                    В работе
+                </option>
+                <option value="completed" {% if request.GET.status == 'completed' %}selected{% endif %}>
+                    Выполнена
+                </option>
+            </select>
+        </div>
+    </form>
+    <ul id="task-list" class="list-group">
+        {% for task in tasks %}
+            <li class="list-group-item task-item">
+                <a href="{% url 'edit_task' task.id %}">
+                    {{ task.title }}
+                </a>
+                <div class="task-actions">
+                    <span class="badge badge-info status-badge">
+                        {% if task.status == 'pending' %}Направлена в работу
+                        {% elif task.status == 'in_progress' %}В работе
+                        {% elif task.status == 'completed' %}Выполнена
+                        {% endif %}
+                    </span>
+                    <button class="btn btn-warning btn-sm">
+                        <a href="{% url 'edit_task' task.id %}" class="text-white">Редактировать</a>
+                    </button>
+                    <button class="btn btn-danger btn-sm">
+                        <a href="{% url 'delete_task' task.id %}" class="text-white">Удалить</a>
+                    </button>
+                </div>
+            </li>
+            {% empty %}
+            <li class="list-group-item">Нет задач.</li>
+        {% endfor %}
+    </ul>
+    <button class="btn btn-primary mt-3">
+        <a href="{% url 'add_task' %}" class="text-white">Добавить задачу</a>
+    </button>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
